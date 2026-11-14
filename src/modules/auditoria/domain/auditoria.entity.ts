@@ -27,6 +27,7 @@ export class Auditoria {
     name: 'tipo_accion',
     type: 'enum',
     enum: ['CREACION', 'ACTUALIZACION', 'ELIMINACION_LOGICA', 'CONSULTA', 'AUTENTICACION'],
+    enumName: 'tipo_accion_auditoria',
   })
   tipoAccion!: TipoAccionAuditoria;
 
@@ -36,10 +37,10 @@ export class Auditoria {
   @Column({ name: 'entidad_id', type: 'varchar', length: 36, nullable: true })
   entidadId!: string | null;
 
-  @Column({ name: 'valor_anterior', type: 'json', nullable: true })
+  @Column({ name: 'valor_anterior', type: 'jsonb', nullable: true })
   valorAnterior!: Record<string, unknown> | null;
 
-  @Column({ name: 'valor_nuevo', type: 'json', nullable: true })
+  @Column({ name: 'valor_nuevo', type: 'jsonb', nullable: true })
   valorNuevo!: Record<string, unknown> | null;
 
   @Column({ type: 'varchar', length: 10, nullable: true })
@@ -51,9 +52,9 @@ export class Auditoria {
   @Column({ type: 'varchar', length: 64, nullable: true })
   ip!: string | null;
 
-  @Column({ type: 'tinyint', width: 1, default: 1 })
+  @Column({ type: 'boolean', default: true })
   exitoso!: boolean;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   fecha!: Date;
 }

@@ -23,7 +23,7 @@ Recorrido de cualquier petición: **Controller** (valida con el DTO y revisa el 
 - `CRIMINAL_READER`: lectura para Carteles, Amenaza, Recompensas, Inteligencia, Operativos e Incidentes.
 - `CRIMINAL_NIVEL_WRITER`: la única escritura de otro módulo. Amenaza la usa para guardar el nivel de amenaza.
 
-**Trazabilidad:** la tabla `criminales_historial` se llena con triggers de la base de datos (`trg_criminales_historial_*`), no desde el código. Cada escritura deja `actualizado_por` con el usuario, y el trigger copia ese dato en el historial. Así incluso un UPDATE hecho a mano en phpMyAdmin queda registrado.
+**Trazabilidad:** la tabla `criminales_historial` se llena con triggers de la base de datos (`trg_criminales_historial_*`), no desde el código. Cada escritura deja `actualizado_por` con el usuario, y el trigger copia ese dato en el historial. Así incluso un UPDATE hecho a mano en el editor de Supabase queda registrado.
 
 ---
 

@@ -22,18 +22,18 @@ export class Rol {
   @Column({ type: 'text', nullable: true })
   descripcion!: string | null;
 
-  @Column({ type: 'json' })
+  @Column({ type: 'jsonb' })
   permisos!: Permiso[];
 
-  @Column({ name: 'requiere_2fa', type: 'tinyint', width: 1, default: 0 })
+  @Column({ name: 'requiere_2fa', type: 'boolean', default: false })
   requiere2fa!: boolean;
 
-  @Column({ type: 'tinyint', width: 1, default: 1 })
+  @Column({ type: 'boolean', default: true })
   activo!: boolean;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
 }

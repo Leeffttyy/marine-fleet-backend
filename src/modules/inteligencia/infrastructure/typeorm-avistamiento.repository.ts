@@ -28,7 +28,7 @@ export class TypeOrmAvistamientoRepository implements AvistamientoRepositoryPort
 
     if (filtro.q) {
       query.andWhere(
-        '(avistamiento.ubicacion LIKE :q OR avistamiento.testigo LIKE :q OR criminal.nombre LIKE :q)',
+        '(avistamiento.ubicacion ILIKE :q OR avistamiento.testigo ILIKE :q OR criminal.nombre ILIKE :q)',
         { q: `%${filtro.q}%` },
       );
     }

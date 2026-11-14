@@ -32,7 +32,7 @@ module.exports = {
           {
             patterns: [
               { group: ['@nestjs/*'], message: 'El dominio no depende de NestJS.' },
-              { group: ['typeorm', 'mysql2'], message: 'El dominio no depende del ORM.' },
+              { group: ['typeorm', 'pg'], message: 'El dominio no depende del ORM.' },
               {
                 group: ['**/infrastructure/**', '@shared/infrastructure/**'],
                 message: 'El dominio no depende de infraestructura.',
@@ -86,7 +86,7 @@ module.exports = {
       // para persistencia", no un modelo puro con entidades espejo en
       // infrastructure/. Se evitan 15 clases duplicadas y 15 mappers.
       //
-      // Lo que sigue prohibido incluso en las entidades: mysql2, NestJS,
+      // Lo que sigue prohibido incluso en las entidades: el driver pg, NestJS,
       // infrastructure/ y presentation/. El resto de domain/ (value objects,
       // politicas, servicios de dominio) no puede tocar TypeORM en absoluto.
       files: ['src/modules/*/domain/**/*.entity.ts', 'src/shared/domain/**/*.entity.ts'],
@@ -97,7 +97,7 @@ module.exports = {
           {
             patterns: [
               { group: ['@nestjs/*'], message: 'Una entidad no depende de NestJS.' },
-              { group: ['mysql2', 'mysql2/*'], message: 'Una entidad no usa el driver directo.' },
+              { group: ['pg', 'pg/*'], message: 'Una entidad no usa el driver directo.' },
               {
                 group: ['**/infrastructure/**', '@shared/infrastructure/**'],
                 message: 'El dominio no depende de infraestructura.',

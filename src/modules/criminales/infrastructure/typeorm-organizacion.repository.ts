@@ -16,13 +16,17 @@ export class TypeOrmOrganizacionRepository implements OrganizacionRepositoryPort
     return this.repo.findOne({ where: { id } });
   }
 
+  /** Sin distinguir mayusculas, igual que el indice unico sobre lower(nombre). */
   buscarPorNombre(nombre: string): Promise<Organizacion | null> {
-    return this.repo.findOne({ where: { nombre } });
+    return this.repo
+      .createQueryBuilder('org')
+      .where('LOWER(org.nombre) = LOWER(:nombre)', { nombre })
+      .getOne();
   }
 
   async listar(filtro: FiltroOrganizaciones): Promise<PageResult<Organizacion>> {
     const query = this.repo.createQueryBuilder('org');
-    if (filtro.q) query.andWhere('org.nombre LIKE :q', { q: `%${filtro.q}%` });
+    if (filtro.q) query.andWhere('org.nombre ILIKE :q', { q: `%${filtro.q}%` });
     if (filtro.categoria) query.andWhere('org.categoria = :cat', { cat: filtro.categoria });
     if (filtro.tipoAgrupacion) {
       query.andWhere('org.tipo_agrupacion = :tipo', { tipo: filtro.tipoAgrupacion });
@@ -31,7 +35,7 @@ export class TypeOrmOrganizacionRepository implements OrganizacionRepositoryPort
       query.andWhere('org.zona_influencia_id = :zona', { zona: filtro.zonaInfluenciaId });
     }
     if (filtro.activa !== undefined) {
-      query.andWhere('org.activa = :activa', { activa: filtro.activa ? 1 : 0 });
+      query.andWhere('org.activa = :activa', { activa: filtro.activa });
     }
 
     const [data, total] = await query

@@ -30,7 +30,7 @@ export class ConcurrenciaOptimistaSubscriber implements EntitySubscriberInterfac
     if (typeof id !== 'string' || versionLeida === undefined || versionLeida === null) return;
 
     const filas = (await event.manager.query(
-      `SELECT ${columnaVersion.databaseName} AS version FROM ${event.metadata.tableName} WHERE id = ? FOR UPDATE`,
+      `SELECT ${columnaVersion.databaseName} AS version FROM ${event.metadata.tableName} WHERE id = $1 FOR UPDATE`,
       [id],
     )) as Array<{ version: number | string }>;
 

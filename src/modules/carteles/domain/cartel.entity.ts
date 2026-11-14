@@ -29,21 +29,26 @@ export class Cartel {
   @Column({ name: 'numero_version', type: 'int' })
   numeroVersion!: number;
 
-  @Column({ type: 'tinyint', width: 1, default: 1 })
+  @Column({ type: 'boolean', default: true })
   vigente!: boolean;
 
-  @Column({ type: 'json' })
+  @Column({ type: 'jsonb' })
   archivo!: { url: string; mime: string; tamano_bytes: number };
 
-  @Column({ name: 'datos_instantanea', type: 'json' })
+  @Column({ name: 'datos_instantanea', type: 'jsonb' })
   datosInstantanea!: Record<string, unknown>;
 
-  @Column({ name: 'motivo_generacion', type: 'enum', enum: MotivoGeneracion })
+  @Column({
+    name: 'motivo_generacion',
+    type: 'enum',
+    enum: MotivoGeneracion,
+    enumName: 'motivo_cartel',
+  })
   motivoGeneracion!: MotivoGeneracion;
 
   @Column({ name: 'generado_por', type: 'varchar', length: 36, nullable: true })
   generadoPor!: string | null;
 
-  @CreateDateColumn({ name: 'generado_en', type: 'timestamp' })
+  @CreateDateColumn({ name: 'generado_en', type: 'timestamptz' })
   generadoEn!: Date;
 }

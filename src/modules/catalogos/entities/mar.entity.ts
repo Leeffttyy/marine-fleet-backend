@@ -14,9 +14,9 @@ export class Mar {
   @Column({ type: 'varchar', length: 100, unique: true })
   nombre!: string;
 
-  @Column({ type: 'enum', enum: TipoMar })
+  @Column({ type: 'enum', enum: TipoMar, enumName: 'tipo_mar' })
   tipo!: TipoMar;
 
-  @Column({ type: 'tinyint', width: 1, default: 1 })
+  @Column({ type: 'boolean', default: true })
   activo!: boolean;
 }

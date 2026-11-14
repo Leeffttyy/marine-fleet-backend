@@ -14,8 +14,8 @@ function unicos(ids: readonly (string | null | undefined)[]): string[] {
 }
 
 /**
- * Consultas parametrizadas (`IN (?, ?, ...)`): los ids nunca se concatenan en
- * el SQL, solo la cantidad de signos de interrogacion.
+ * Consultas parametrizadas (`id = ANY($1)` con la lista como arreglo): los ids
+ * nunca se concatenan en el SQL.
  */
 @Injectable()
 export class SqlNombresLookup implements NombresLookupPort {
@@ -23,7 +23,7 @@ export class SqlNombresLookup implements NombresLookupPort {
 
   async usuarios(ids: readonly (string | null | undefined)[]): Promise<Map<string, string>> {
     const filas = await this.consultar<{ id: string; nombre: string }>(
-      'SELECT id, nombre_completo AS nombre FROM usuarios WHERE id IN',
+      'SELECT id, nombre_completo AS nombre FROM usuarios WHERE id = ANY($1)',
       ids,
     );
     return new Map(filas.map((f) => [f.id, f.nombre]));
@@ -33,7 +33,7 @@ export class SqlNombresLookup implements NombresLookupPort {
     ids: readonly (string | null | undefined)[],
   ): Promise<Map<string, CriminalNombrado>> {
     const filas = await this.consultar<{ id: string; nombre: string; foto: unknown }>(
-      'SELECT id, nombre, foto FROM criminales WHERE id IN',
+      'SELECT id, nombre, foto FROM criminales WHERE id = ANY($1)',
       ids,
     );
     return new Map(filas.map((f) => [f.id, { nombre: f.nombre, fotoUrl: this.urlFoto(f.foto) }]));
@@ -41,7 +41,7 @@ export class SqlNombresLookup implements NombresLookupPort {
 
   async bases(ids: readonly (string | null | undefined)[]): Promise<Map<string, string>> {
     const filas = await this.consultar<{ id: string; nombre: string }>(
-      'SELECT id, nombre FROM bases_navales WHERE id IN',
+      'SELECT id, nombre FROM bases_navales WHERE id = ANY($1)',
       ids,
     );
     return new Map(filas.map((f) => [f.id, f.nombre]));
@@ -53,11 +53,10 @@ export class SqlNombresLookup implements NombresLookupPort {
   ): Promise<T[]> {
     const lista = unicos(ids);
     if (lista.length === 0) return [];
-    const marcas = lista.map(() => '?').join(', ');
-    return (await this.dataSource.query(`${sql} (${marcas})`, lista)) as T[];
+    return (await this.dataSource.query(sql, [lista])) as T[];
   }
 
-  /** La columna JSON llega como objeto (MySQL) o como texto (MariaDB). */
+  /** La columna jsonb llega como objeto; si alguna vez llega como texto, se parsea. */
   private urlFoto(foto: unknown): string | null {
     let valor = foto;
     if (typeof valor === 'string') {

@@ -134,9 +134,9 @@ Errores: `400 CONTRASENA_DEBIL`, `400 EMAIL_DUPLICADO`, `400 BASE_REQUERIDA`,
      un auditor quiere ver).
   2. **Base de datos:** los triggers `trg_criminales_historial_update/insert` escriben en
      `criminales_historial` cada campo que cambia (valor anterior, valor nuevo y usuario). Los de
-     recompensas impiden cambiar el monto o borrar una recompensa (`SIGNAL 45000`) y registran
+     recompensas impiden cambiar el monto, saltarse estados o borrar una recompensa (`RAISE EXCEPTION`) y registran
      cada cambio de estado. Así el rastro queda aunque alguien edite la base a mano en
-     phpMyAdmin.
+     el editor de Supabase.
 
 ## CU-AUD-2 Consultar la bitácora
 

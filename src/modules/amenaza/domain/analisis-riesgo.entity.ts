@@ -16,7 +16,7 @@ export class AnalisisRiesgo {
   @Column({ name: 'criminal_id', type: 'varchar', length: 36 })
   criminalId!: string;
 
-  @Column({ name: 'fecha_analisis', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ name: 'fecha_analisis', type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   fechaAnalisis!: Date;
 
   @Column({
@@ -32,13 +32,13 @@ export class AnalisisRiesgo {
   })
   montoEvaluado!: number | null;
 
-  @Column({ name: 'nivel_base', type: 'enum', enum: NivelAmenaza })
+  @Column({ name: 'nivel_base', type: 'enum', enum: NivelAmenaza, enumName: 'nivel_amenaza' })
   nivelBase!: NivelAmenaza;
 
-  @Column({ name: 'nivel_resultante', type: 'enum', enum: NivelAmenaza })
+  @Column({ name: 'nivel_resultante', type: 'enum', enum: NivelAmenaza, enumName: 'nivel_amenaza' })
   nivelResultante!: NivelAmenaza;
 
-  @Column({ type: 'tinyint', width: 1, default: 0 })
+  @Column({ type: 'boolean', default: false })
   escalado!: boolean;
 
   @Column({ type: 'text' })

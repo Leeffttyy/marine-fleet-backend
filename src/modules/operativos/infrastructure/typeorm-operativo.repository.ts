@@ -33,7 +33,7 @@ export class TypeOrmOperativoRepository implements OperativoRepositoryPort, Oper
       .leftJoinAndSelect('operativo.bases', 'participacion');
 
     if (filtro.q) {
-      query.andWhere('(operativo.nombre LIKE :q OR operativo.codigo LIKE :q)', {
+      query.andWhere('(operativo.nombre ILIKE :q OR operativo.codigo ILIKE :q)', {
         q: `%${filtro.q}%`,
       });
     }
@@ -104,7 +104,7 @@ export class TypeOrmOperativoRepository implements OperativoRepositoryPort, Oper
 
   async contarIncidentesVinculados(operativoId: string): Promise<number> {
     const filas = (await this.repo.query(
-      'SELECT COUNT(*) AS total FROM incidentes WHERE operativo_id = ?',
+      'SELECT COUNT(*) AS total FROM incidentes WHERE operativo_id = $1',
       [operativoId],
     )) as Array<{ total: number | string }>;
     return Number(filas[0]?.total ?? 0);

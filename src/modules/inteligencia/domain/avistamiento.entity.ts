@@ -28,7 +28,7 @@ export class Avistamiento {
   @Column({ name: 'criminal_id', type: 'varchar', length: 36 })
   criminalId!: string;
 
-  @Column({ name: 'fecha_hora', type: 'timestamp' })
+  @Column({ name: 'fecha_hora', type: 'timestamptz' })
   fechaHora!: Date;
 
   @Column({ type: 'text' })
@@ -44,11 +44,17 @@ export class Avistamiento {
     name: 'estado_verificacion',
     type: 'enum',
     enum: EstadoVerificacion,
+    enumName: 'estado_verificacion',
     default: EstadoVerificacion.PENDIENTE,
   })
   estadoVerificacion!: EstadoVerificacion;
 
-  @Column({ type: 'enum', enum: OrigenAvistamiento, default: OrigenAvistamiento.OFICIAL })
+  @Column({
+    type: 'enum',
+    enum: OrigenAvistamiento,
+    enumName: 'origen_avistamiento',
+    default: OrigenAvistamiento.OFICIAL,
+  })
   origen!: OrigenAvistamiento;
 
   @Column({ type: 'text', nullable: true })
@@ -60,7 +66,7 @@ export class Avistamiento {
   @Column({ name: 'verificado_por', type: 'varchar', length: 36, nullable: true })
   verificadoPor!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
   @ManyToOne(() => Criminal, { onDelete: 'CASCADE' })

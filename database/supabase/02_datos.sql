@@ -74,7 +74,7 @@ INSERT INTO bases_navales (id, nombre, zona_influencia_id, ubicacion, comandante
   ('b-loguetown',   'Base de Loguetown','z-loguetown',   'Loguetown, East Blue',           'Capitán Smoker',              'ACTIVA'),
   ('b-16',          'Base 16',          'z-alabasta',    'Nanohana, Alabasta',             'Capitana Hina',               'ACTIVA'),
   ('b-g1',          'Base G-1',         'z-sabaody',     'Archipiélago Sabaody',           'Vicealmirante Momonga',       'ACTIVA'),
-  ('b-marineford',  'Cuartel General',  'z-marineford',  'Marineford',                     'Almirante de Flota Sakazuki', 'ACTIVA'),
+  ('b-marineford',  'Base de Marineford','z-marineford',  'Marineford',                     'Almirante de Flota Sakazuki', 'ACTIVA'),
   ('b-g5',          'Base G-5',         'z-dressrosa',   'Nuevo Mundo',                    'Vicealmirante Smoker',        'ACTIVA'),
   ('b-impel-down',  'Impel Down',       'z-impel-down',  'Calm Belt, bajo el mar',         'Jefe de Prisión Magellan',    'ACTIVA'),
   ('b-g8',          'Base G-8',         'z-navarone',    'Isla Navarone, Grand Line',      'Vicealmirante Jonathan',      'INACTIVA')
@@ -122,15 +122,16 @@ ON CONFLICT (id) DO UPDATE
 -- MFA queda deshabilitado en las cuentas de prueba: no tienen secreto TOTP
 -- enrolado y la demo debe poder entrar solo con contraseña.
 INSERT INTO usuarios (id, nombre_completo, email, password_hash, rol_id, base_naval_id) VALUES
-  ('u-almirante',                 'Almirante de la Marina',                'almirante@marina.gov',                 '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-almirante',                 NULL),
-  ('u-director-inteligencia',     'Director de Inteligencia',              'director_inteligencia@marina.gov',     '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-director-inteligencia',     NULL),
-  ('u-analista-datos-criminales', 'Analista de Datos Criminales',          'analista_datos_criminales@marina.gov', '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-analista-datos-criminales', NULL),
-  ('u-coordinador-operaciones',   'Coordinador de Operaciones',            'coordinador_operaciones@marina.gov',   '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-coordinador-operaciones',   'b-marineford'),
-  ('u-desarrollador-backend',     'Desarrollador Backend',                 'desarrollador_backend@marina.gov',     '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-desarrollador-backend',     NULL),
-  ('u-especialista-seguridad',    'Especialista en Seguridad Informática', 'especialista_seguridad@marina.gov',    '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-especialista-seguridad',    NULL),
-  ('u-capitan',                   'Capitán de Base',                       'capitan@marina.gov',                   '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-capitan',                   'b-loguetown')
+  ('u-almirante',                 'Sakazuki',                              'almirante@marina.gov',                 '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-almirante',                 NULL),
+  ('u-director-inteligencia',     'Tsuru',                                 'director_inteligencia@marina.gov',     '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-director-inteligencia',     NULL),
+  ('u-analista-datos-criminales', 'Tashigi',                               'analista_datos_criminales@marina.gov', '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-analista-datos-criminales', NULL),
+  ('u-coordinador-operaciones',   'Brannew',                               'coordinador_operaciones@marina.gov',   '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-coordinador-operaciones',   'b-marineford'),
+  ('u-desarrollador-backend',     'Vegapunk',                              'desarrollador_backend@marina.gov',     '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-desarrollador-backend',     NULL),
+  ('u-especialista-seguridad',    'Doberman',                              'especialista_seguridad@marina.gov',    '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-especialista-seguridad',    NULL),
+  ('u-capitan',                   'Smoker',                                'capitan@marina.gov',                   '$2b$10$KdSp1325u26jsyQBdDKkMOZJd/Hc9Zig.e/j1EIvgPAWLIB3ZfqLe', 'r-capitan',                   'b-loguetown')
 ON CONFLICT (id) DO UPDATE
-  SET rol_id = EXCLUDED.rol_id, password_hash = EXCLUDED.password_hash,
+  SET nombre_completo = EXCLUDED.nombre_completo, rol_id = EXCLUDED.rol_id,
+      password_hash = EXCLUDED.password_hash,
       base_naval_id = EXCLUDED.base_naval_id, estado = 'ACTIVO', intentos_fallidos = 0;
 
 -- =============================================================================

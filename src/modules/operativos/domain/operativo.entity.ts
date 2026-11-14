@@ -41,25 +41,41 @@ export class Operativo extends BaseEntity {
   @Column({ name: 'base_lider_id', type: 'varchar', length: 36 })
   baseLiderId!: string;
 
-  @Column({ type: 'enum', enum: EstadoOperativo, default: EstadoOperativo.PLANIFICADO })
+  @Column({
+    type: 'enum',
+    enum: EstadoOperativo,
+    enumName: 'estado_operativo',
+    default: EstadoOperativo.PLANIFICADO,
+  })
   estado!: EstadoOperativo;
 
-  @Column({ type: 'enum', enum: PrioridadOperativo, default: PrioridadOperativo.MEDIA })
+  @Column({
+    type: 'enum',
+    enum: PrioridadOperativo,
+    enumName: 'prioridad_operativo',
+    default: PrioridadOperativo.MEDIA,
+  })
   prioridad!: PrioridadOperativo;
 
   @Column({ type: 'text', nullable: true })
   descripcion!: string | null;
 
-  @Column({ name: 'fecha_inicio_planeada', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_inicio_planeada', type: 'timestamptz', nullable: true })
   fechaInicioPlaneada!: Date | null;
 
-  @Column({ name: 'fecha_inicio_real', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_inicio_real', type: 'timestamptz', nullable: true })
   fechaInicioReal!: Date | null;
 
-  @Column({ name: 'fecha_cierre', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_cierre', type: 'timestamptz', nullable: true })
   fechaCierre!: Date | null;
 
-  @Column({ name: 'resultado_final', type: 'enum', enum: ResultadoOperativo, nullable: true })
+  @Column({
+    name: 'resultado_final',
+    type: 'enum',
+    enum: ResultadoOperativo,
+    enumName: 'resultado_operativo',
+    nullable: true,
+  })
   resultadoFinal!: ResultadoOperativo | null;
 
   @Column({ name: 'observaciones_cierre', type: 'text', nullable: true })

@@ -13,10 +13,15 @@ export class Organizacion extends BaseEntity {
   @Column({ type: 'varchar', length: 100, unique: true })
   nombre!: string;
 
-  @Column({ name: 'tipo_agrupacion', type: 'enum', enum: TipoAgrupacion })
+  @Column({
+    name: 'tipo_agrupacion',
+    type: 'enum',
+    enum: TipoAgrupacion,
+    enumName: 'tipo_agrupacion',
+  })
   tipoAgrupacion!: TipoAgrupacion;
 
-  @Column({ type: 'enum', enum: CategoriaOrganizacion })
+  @Column({ type: 'enum', enum: CategoriaOrganizacion, enumName: 'categoria_organizacion' })
   categoria!: CategoriaOrganizacion;
 
   @Column({ name: 'zona_influencia_id', type: 'varchar', length: 36, nullable: true })
@@ -25,7 +30,7 @@ export class Organizacion extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   descripcion!: string | null;
 
-  @Column({ type: 'tinyint', width: 1, default: 1 })
+  @Column({ type: 'boolean', default: true })
   activa!: boolean;
 
   @OneToMany(() => Membresia, (membresia) => membresia.organizacion)

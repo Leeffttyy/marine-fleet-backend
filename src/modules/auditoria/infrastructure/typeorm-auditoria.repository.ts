@@ -53,8 +53,7 @@ export class TypeOrmAuditoriaRepository implements AuditoriaWriterPort, Auditori
     if (filtro.accion) query.andWhere('a.accion = :accion', { accion: filtro.accion });
     if (filtro.entidad) query.andWhere('a.entidad = :entidad', { entidad: filtro.entidad });
     if (filtro.entidadId) query.andWhere('a.entidad_id = :eid', { eid: filtro.entidadId });
-    if (filtro.exitoso !== undefined)
-      query.andWhere('a.exitoso = :ok', { ok: filtro.exitoso ? 1 : 0 });
+    if (filtro.exitoso !== undefined) query.andWhere('a.exitoso = :ok', { ok: filtro.exitoso });
     if (filtro.desde) query.andWhere('a.fecha >= :desde', { desde: filtro.desde });
     if (filtro.hasta) query.andWhere('a.fecha <= :hasta', { hasta: filtro.hasta });
 

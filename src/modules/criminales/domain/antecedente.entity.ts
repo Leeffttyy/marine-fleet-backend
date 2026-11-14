@@ -14,7 +14,7 @@ export class Antecedente extends BaseEntity {
   @Column({ type: 'text' })
   descripcion!: string;
 
-  @Column({ name: 'fecha_hecho', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_hecho', type: 'timestamptz', nullable: true })
   fechaHecho!: Date | null;
 
   @Column({ type: 'text', nullable: true })

@@ -11,6 +11,7 @@ import type {
   FiltroCriminales,
 } from '../domain/criminal.repository.port';
 import { NivelAmenaza } from '../domain/estado-criminal.enum';
+import { normalizarNombre } from '../domain/services/normalizador-nombre';
 
 /**
  * ADAPTADOR DE REFERENCIA. Implementa los tres puertos del modulo (escritura
@@ -40,7 +41,7 @@ export class TypeOrmCriminalRepository
   async listar(filtro: FiltroCriminales): Promise<PageResult<Criminal>> {
     const query = this.repo
       .createQueryBuilder('criminal')
-      .leftJoinAndSelect('criminal.membresias', 'membresia', 'membresia.vigente = 1')
+      .leftJoinAndSelect('criminal.membresias', 'membresia', 'membresia.vigente = true')
       .leftJoinAndSelect('membresia.organizacion', 'organizacion');
 
     this.aplicarFiltros(query, filtro);
@@ -56,13 +57,18 @@ export class TypeOrmCriminalRepository
     return new PageResult(data, total, filtro.page, filtro.limit);
   }
 
-  /** Siempre parametrizado: nunca se interpola texto del usuario en el SQL. */
+  /**
+   * Siempre parametrizado: nunca se interpola texto del usuario en el SQL.
+   * La busqueda no distingue mayusculas (ILIKE) y, contra el nombre
+   * normalizado, tampoco tildes ni signos: "monkey d luffy" encuentra a
+   * "Monkey D. Luffy".
+   */
   private aplicarFiltros(query: SelectQueryBuilder<Criminal>, filtro: FiltroCriminales): void {
     if (filtro.q) {
       query.andWhere(
-        '(criminal.nombre LIKE :q OR criminal.nombre_normalizado LIKE :q ' +
-          'OR LOWER(CAST(criminal.alias AS CHAR)) LIKE :qmin)',
-        { q: `%${filtro.q}%`, qmin: `%${filtro.q.toLowerCase()}%` },
+        '(criminal.nombre ILIKE :q OR criminal.nombre_normalizado LIKE :qnorm ' +
+          'OR CAST(criminal.alias AS text) ILIKE :q)',
+        { q: `%${filtro.q}%`, qnorm: `%${normalizarNombre(filtro.q)}%` },
       );
     }
     if (filtro.estado) {
@@ -85,7 +91,7 @@ export class TypeOrmCriminalRepository
     if (filtro.organizacionId) {
       query.andWhere(
         'EXISTS (SELECT 1 FROM membresias mf WHERE mf.criminal_id = criminal.id ' +
-          'AND mf.vigente = 1 AND mf.organizacion_id = :org)',
+          'AND mf.vigente AND mf.organizacion_id = :org)',
         { org: filtro.organizacionId },
       );
     }
@@ -93,7 +99,7 @@ export class TypeOrmCriminalRepository
       query.andWhere(
         'EXISTS (SELECT 1 FROM membresias mc INNER JOIN organizaciones oc ' +
           'ON oc.id = mc.organizacion_id WHERE mc.criminal_id = criminal.id ' +
-          'AND mc.vigente = 1 AND oc.categoria = :categoria)',
+          'AND mc.vigente AND oc.categoria = :categoria)',
         { categoria: filtro.categoria },
       );
     }
