@@ -44,4 +44,41 @@ export const envValidationSchema = Joi.object({
 
   FRONTEND_URL: Joi.string().uri().default('http://localhost:5173'),
   STORAGE_PATH: Joi.string().default('./storage/carteles'),
+
+  // Supabase Storage para fotos y carteles. Sin las dos, se usa el disco local.
+  SUPABASE_URL: Joi.string()
+    .uri({ scheme: ['https', 'http'] })
+    .allow('')
+    .optional(),
+  SUPABASE_SERVICE_ROLE_KEY: Joi.string().allow('').custom(soloLlaveSecreta).optional(),
+  SUPABASE_STORAGE_BUCKET: Joi.string()
+    .pattern(/^[a-z0-9][a-z0-9_-]{2,62}$/)
+    .default('marine-fleet'),
 });
+
+/**
+ * El backend necesita la llave SECRETA: la anon/publishable no puede escribir en
+ * un bucket privado y, con Row Level Security, tampoco leer.
+ */
+function soloLlaveSecreta(valor: string, helpers: Joi.CustomHelpers): string | Joi.ErrorReport {
+  if (valor.startsWith('sb_secret_')) return valor;
+  if (valor.startsWith('eyJ') && rolDelJwt(valor) === 'service_role') return valor;
+  return helpers.message({
+    custom:
+      '"SUPABASE_SERVICE_ROLE_KEY" debe ser la llave secreta (sb_secret_... o service_role), ' +
+      'no la anon ni la publishable',
+  });
+}
+
+function rolDelJwt(jwt: string): string | null {
+  try {
+    const carga = JSON.parse(
+      Buffer.from(jwt.split('.')[1] ?? '', 'base64url').toString('utf8'),
+    ) as {
+      role?: unknown;
+    };
+    return typeof carga.role === 'string' ? carga.role : null;
+  } catch {
+    return null;
+  }
+}

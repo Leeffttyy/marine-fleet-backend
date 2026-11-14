@@ -19,6 +19,10 @@ Usamos **PostgreSQL en Supabase** con el driver `pg`. TypeORM sigue siendo el OR
 - El esquema vive en `database/supabase/01_esquema.sql`. La migracion
   `1731300000000-EsquemaPostgres` lo ejecuta, o solo se registra si el esquema ya se creo
   desde el SQL Editor de Supabase. Las migraciones de MySQL quedan en el historial de git.
+- Las fotos de criminales y los carteles van a un bucket privado de **Supabase Storage**
+  cuando el `.env` trae `SUPABASE_URL` y la llave secreta; sin ellas, al disco local. El
+  navegador los pide al backend (`/api/v1/archivos/...`), asi que la llave secreta nunca sale
+  del servidor. `npm run storage:subir` pasa al bucket lo que ya estaba en el disco.
 - Los datos de prueba viven en `database/supabase/02_datos.sql`. `npm run seed` corre ese
   mismo archivo, asi que hay una sola fuente de datos.
 - La conexion es la cadena del **Session pooler** de Supabase en `DATABASE_URL`, con SSL

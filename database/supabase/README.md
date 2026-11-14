@@ -99,5 +99,27 @@ ninguna tabla.
 Para verificar también la identidad del servidor, descarga el certificado en
 **Database Settings → SSL Configuration** y pon su ruta en `DB_SSL_CA`.
 
+## Fotos y carteles en Supabase Storage
+
+Las fotos de los criminales y los PDF de los carteles se guardan en un bucket
+privado (`marine-fleet`, se crea solo) cuando el `.env` trae:
+
+```dotenv
+SUPABASE_URL=https://<id-del-proyecto>.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<llave secreta: sb_secret_... o service_role>
+```
+
+Aquí sí se usa una API key, y tiene que ser la **secreta**: la `anon` o la
+`publishable` no pueden escribir en un bucket privado (la API las rechaza al
+arrancar). La llave queda solo en el backend: el navegador pide los archivos a
+`/api/v1/archivos/...` y el backend los lee del bucket.
+
+Si generaste fotos o carteles antes de poner las llaves, quedaron en tu disco.
+Súbelos al bucket con las mismas rutas:
+
+```bash
+npm run storage:subir
+```
+
 Las razones del cambio y su costo están en
 `docs/adr/0003-postgresql-en-supabase.md`.

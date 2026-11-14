@@ -27,6 +27,7 @@
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
     "seed": "ts-node -r tsconfig-paths/register src/shared/infrastructure/database/seeds/one-piece.seed.ts",
+    "storage:subir": "ts-node -r tsconfig-paths/register src/shared/infrastructure/storage/subir-locales.ts",
     "prepare": "husky"
   },
   "dependencies": {
