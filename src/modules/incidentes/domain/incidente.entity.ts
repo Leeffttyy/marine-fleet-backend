@@ -28,17 +28,18 @@ export class Incidente extends BaseEntity {
   @Column({ name: 'operativo_id', type: 'varchar', length: 36, nullable: true })
   operativoId!: string | null;
 
-  @Column({ type: 'enum', enum: TipoIncidente })
+  @Column({ type: 'enum', enum: TipoIncidente, enumName: 'tipo_incidente' })
   tipo!: TipoIncidente;
 
   @Column({
     type: 'enum',
     enum: ResultadoEnfrentamiento,
+    enumName: 'resultado_incidente',
     default: ResultadoEnfrentamiento.EN_CURSO,
   })
   resultado!: ResultadoEnfrentamiento;
 
-  @Column({ name: 'fecha_hora', type: 'timestamp' })
+  @Column({ name: 'fecha_hora', type: 'timestamptz' })
   fechaHora!: Date;
 
   @Column({ type: 'text' })
@@ -62,7 +63,7 @@ export class Incidente extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   observaciones!: string | null;
 
-  @Column({ name: 'participantes_marina', type: 'json', nullable: true })
+  @Column({ name: 'participantes_marina', type: 'jsonb', nullable: true })
   participantesMarina!: MarinoParticipante[] | null;
 
   @Column({ name: 'registrado_por', type: 'varchar', length: 36, nullable: true })

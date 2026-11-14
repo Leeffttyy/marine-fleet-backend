@@ -27,6 +27,7 @@
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
     "seed": "ts-node -r tsconfig-paths/register src/shared/infrastructure/database/seeds/one-piece.seed.ts",
+    "storage:subir": "ts-node -r tsconfig-paths/register src/shared/infrastructure/storage/subir-locales.ts",
     "prepare": "husky"
   },
   "dependencies": {
@@ -45,10 +46,10 @@
     "compression": "^1.7.5",
     "helmet": "^8.0.0",
     "joi": "^17.13.3",
-    "mysql2": "^3.12.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pdfkit": "^0.16.0",
+    "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20",
@@ -67,6 +68,7 @@
     "@types/node": "^22.10.7",
     "@types/passport-jwt": "^4.0.1",
     "@types/pdfkit": "^0.13.9",
+    "@types/pg": "^8.11.10",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
     "@typescript-eslint/parser": "^8.20.0",

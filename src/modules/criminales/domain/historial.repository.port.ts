@@ -4,8 +4,8 @@ export const HISTORIAL_CRIMINAL_REPOSITORY = Symbol('HISTORIAL_CRIMINAL_REPOSITO
 
 /**
  * Una fila de `criminales_historial`. La tabla la escriben TRIGGERS de la base
- * (InitSchema y AmpliarModelo), no la aplicacion: por eso este puerto es solo de
- * lectura. Ni siquiera un UPDATE manual en phpMyAdmin escapa al registro.
+ * (database/supabase/01_esquema.sql), no la aplicacion: por eso este puerto es solo de
+ * lectura. Ni siquiera un UPDATE manual en el editor de Supabase escapa al registro.
  */
 export interface EntradaHistorial {
   readonly id: number;

@@ -69,21 +69,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     if (exception instanceof QueryFailedError) {
-      const driverError = exception.driverError as { code?: string } | undefined;
-      if (driverError?.code === 'ER_DUP_ENTRY') {
-        return {
-          status: HttpStatus.CONFLICT,
-          message: 'El registro ya existe.',
-          codigo: 'DUPLICADO',
-        };
-      }
-      if (driverError?.code === 'ER_NO_REFERENCED_ROW_2') {
-        return {
-          status: HttpStatus.BAD_REQUEST,
-          message: 'Una referencia enviada no existe.',
-          codigo: 'FK_INVALIDA',
-        };
-      }
+      const deLaBase = this.errorDePostgres(exception);
+      if (deLaBase) return deLaBase;
     }
 
     const deExpress = this.errorDeExpress(exception);
@@ -94,6 +81,46 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message: 'Error interno del servidor.',
       codigo: 'INTERNO',
     };
+  }
+
+  /**
+   * Restricciones de la base, por su codigo SQLSTATE de Postgres. Las reglas
+   * que protegen registros criticos (recompensas inmutables, auditoria de solo
+   * insercion) las lanzan triggers propios con un mensaje pensado para el
+   * usuario; cualquier otro error de la base no muestra su mensaje.
+   */
+  private errorDePostgres(
+    exception: QueryFailedError,
+  ): { status: number; message: string; codigo: string } | null {
+    const driverError = exception.driverError as { code?: string; message?: string } | undefined;
+    switch (driverError?.code) {
+      case '23505':
+        return {
+          status: HttpStatus.CONFLICT,
+          message: 'El registro ya existe.',
+          codigo: 'DUPLICADO',
+        };
+      case '23503':
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          message: 'Una referencia enviada no existe.',
+          codigo: 'FK_INVALIDA',
+        };
+      case '23514':
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          message: 'Los datos no cumplen una regla de la base de datos.',
+          codigo: 'RESTRICCION_INCUMPLIDA',
+        };
+      case '23000':
+        return {
+          status: HttpStatus.CONFLICT,
+          message: driverError.message ?? 'El registro esta protegido contra cambios.',
+          codigo: 'REGISTRO_PROTEGIDO',
+        };
+      default:
+        return null;
+    }
   }
 
   /**

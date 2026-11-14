@@ -31,7 +31,7 @@ export interface DetalleBaseNaval {
  * CAPA DELGADA a proposito (ADR 0001): es CRUD sin reglas de negocio, asi que
  * no lleva puertos ni casos de uso. Las unicas validaciones son de integridad
  * (que el mar o la zona referida exista) y la concurrencia optimista de bases.
- * Nada se borra: se desactiva (activo = 0 / estado INACTIVA) para no romper el
+ * Nada se borra: se desactiva (activo = false / estado INACTIVA) para no romper el
  * historial que referencia el registro.
  */
 @Injectable()
@@ -99,17 +99,17 @@ export class CatalogosAdminService {
   async detalleBase(id: string): Promise<DetalleBaseNaval> {
     const base = await this.obtenerBase(id);
     const usuarios = (await this.bases.query(
-      `SELECT u.id, u.nombre_completo AS nombreCompleto, r.codigo AS rol, u.estado
+      `SELECT u.id, u.nombre_completo AS "nombreCompleto", r.codigo AS rol, u.estado
          FROM usuarios u JOIN roles r ON r.id = u.rol_id
-        WHERE u.base_naval_id = ? ORDER BY u.nombre_completo`,
+        WHERE u.base_naval_id = $1 ORDER BY u.nombre_completo`,
       [id],
     )) as DetalleBaseNaval['usuariosAsignados'];
     const operativos = (await this.bases.query(
       `SELECT COUNT(DISTINCT o.id) AS total FROM operativos o
          LEFT JOIN operativo_bases ob ON ob.operativo_id = o.id
         WHERE o.estado IN ('PLANIFICADO','EN_CURSO')
-          AND (o.base_lider_id = ? OR ob.base_naval_id = ?)`,
-      [id, id],
+          AND (o.base_lider_id = $1 OR ob.base_naval_id = $1)`,
+      [id],
     )) as Array<{ total: number | string }>;
 
     return {

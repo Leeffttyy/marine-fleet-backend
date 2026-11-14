@@ -33,9 +33,9 @@ export class Notificacion {
   @Column({ name: 'referencia_id', type: 'varchar', length: 36, nullable: true })
   referenciaId!: string | null;
 
-  @Column({ type: 'tinyint', width: 1, default: 0 })
+  @Column({ type: 'boolean', default: false })
   leida!: boolean;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 }

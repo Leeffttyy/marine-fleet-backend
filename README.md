@@ -1,7 +1,7 @@
 # marine-fleet-backend
 
 API del Sistema de Gestión de Recompensas y Captura de Criminales de la Marina (Caso 13).
-NestJS + TypeScript + TypeORM + MySQL, con Clean Architecture por módulo.
+NestJS + TypeScript + TypeORM + PostgreSQL (Supabase), con Clean Architecture por módulo.
 
 > **¿Solo quieres ejecutar el proyecto?** Sigue la [guía de ejecución](docs/EJECUCION.md): tiene
 > el paso a paso completo, desde la base de datos hasta abrir la página en el navegador.
@@ -18,12 +18,13 @@ npm install
 cp .env.example .env     # en PowerShell: Copy-Item .env.example .env
 ```
 
-Edita `.env` con tus credenciales de MySQL. Si `JWT_SECRET` tiene menos de 32 caracteres, la
-app no arranca: la validación de entorno es intencionalmente estricta.
+Edita `.env`: en `DATABASE_URL` va la cadena de conexión de Supabase (**Connect → Session
+pooler**) con la contraseña de la base. Si `JWT_SECRET` tiene menos de 32 caracteres, la app no arranca: la validación
+de entorno es intencionalmente estricta.
 
 ```bash
-npm run migration:run    # crea TODAS las tablas y los triggers (ya no hace falta schema.sql)
-npm run seed             # roles, 1 usuario por rol, mares, bases, organizaciones, criminales...
+npm run migration:run    # crea TODAS las tablas y los triggers (database/supabase/01_esquema.sql)
+npm run seed             # datos de prueba (database/supabase/02_datos.sql)
 npm run start:dev
 ```
 
@@ -56,7 +57,7 @@ puertos, adaptadores TypeORM, controllers con RBAC, DTOs validados y pruebas uni
 | `catalogos`                     | Mares, zonas y bases navales (lectura y administración)                    |
 | `auth`, `usuarios`, `auditoria` | Login, refresh, cuentas con rol y base, bitácora consultable               |
 
-Pendiente opcional (no lo exige el documento): segundo factor TOTP (`auth/domain/mfa-provider.port.ts`).
+Segundo factor TOTP incluido. Cambios de contrato para el frontend: [`docs/CAMBIOS-PARA-FRONTEND.md`](docs/CAMBIOS-PARA-FRONTEND.md).
 
 Prueba de punta a punta contra la API real: `bash scripts/flujo-demo.sh`.
 
@@ -86,7 +87,7 @@ Si el lint falla por un límite de capa, el problema es el import, no la regla.
 **Única excepción, deliberada:** los archivos `*.entity.ts` dentro de `domain/` sí pueden
 importar `typeorm`, porque el modelo es de dominio anotado para persistencia y no un modelo
 puro con entidades espejo en `infrastructure/`. El razonamiento y su costo están en
-`docs/adr/0002-typeorm-sobre-prisma.md`. En esos archivos siguen prohibidos `mysql2`, NestJS,
+`docs/adr/0002-typeorm-sobre-prisma.md`. En esos archivos siguen prohibidos `pg`, NestJS,
 `infrastructure/` y `presentation/`; y en el resto de `domain/` TypeORM está prohibido sin
 excepción.
 

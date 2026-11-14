@@ -17,7 +17,12 @@ export class ParticipacionBase {
   @Column({ name: 'base_naval_id', type: 'varchar', length: 36 })
   baseNavalId!: string;
 
-  @Column({ name: 'rol_participacion', type: 'enum', enum: RolParticipacion })
+  @Column({
+    name: 'rol_participacion',
+    type: 'enum',
+    enum: RolParticipacion,
+    enumName: 'rol_participacion',
+  })
   rolParticipacion!: RolParticipacion;
 
   @Column({ name: 'unidades_asignadas', type: 'int', default: 0 })
@@ -27,13 +32,13 @@ export class ParticipacionBase {
   @Column({ type: 'text', nullable: true })
   recursos!: string | null;
 
-  @Column({ type: 'tinyint', width: 1, default: 0 })
+  @Column({ type: 'boolean', default: false })
   confirmada!: boolean;
 
   @Column({ type: 'text', nullable: true })
   observaciones!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
   @ManyToOne(() => Operativo, (operativo) => operativo.bases, { onDelete: 'CASCADE' })

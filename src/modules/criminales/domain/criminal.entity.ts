@@ -27,7 +27,7 @@ export class Criminal extends BaseEntity {
   @Column({ name: 'nombre_normalizado', type: 'varchar', length: 150, unique: true })
   nombreNormalizado!: string;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   alias!: string[] | null;
 
   @Column({ type: 'int', nullable: true })
@@ -36,13 +36,18 @@ export class Criminal extends BaseEntity {
   @Column({ name: 'descripcion_fisica', type: 'text', nullable: true })
   descripcionFisica!: string | null;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   foto!: FotoCriminal | null;
 
-  @Column({ type: 'enum', enum: EstadoCriminal, default: EstadoCriminal.ACTIVO })
+  @Column({
+    type: 'enum',
+    enum: EstadoCriminal,
+    enumName: 'estado_criminal',
+    default: EstadoCriminal.ACTIVO,
+  })
   estado!: EstadoCriminal;
 
-  @Column({ name: 'fecha_baja', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_baja', type: 'timestamptz', nullable: true })
   fechaBaja!: Date | null;
 
   @Column({ name: 'zona_influencia_id', type: 'varchar', length: 36, nullable: true })
@@ -65,6 +70,7 @@ export class Criminal extends BaseEntity {
     name: 'nivel_amenaza',
     type: 'enum',
     enum: NivelAmenaza,
+    enumName: 'nivel_amenaza',
     default: NivelAmenaza.PENDIENTE,
   })
   nivelAmenaza!: NivelAmenaza;

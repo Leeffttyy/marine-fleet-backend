@@ -33,7 +33,7 @@ export class ReporteCiudadano {
   @Column({ type: 'text' })
   descripcion!: string;
 
-  @Column({ name: 'fecha_hecho', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_hecho', type: 'timestamptz', nullable: true })
   fechaHecho!: Date | null;
 
   @Column({ type: 'text' })
@@ -42,16 +42,21 @@ export class ReporteCiudadano {
   @Column({ name: 'zona_influencia_id', type: 'varchar', length: 36, nullable: true })
   zonaInfluenciaId!: string | null;
 
-  @Column({ type: 'json' })
+  @Column({ type: 'jsonb' })
   informante!: Informante;
 
-  @Column({ type: 'enum', enum: EstadoReporte, default: EstadoReporte.PENDIENTE })
+  @Column({
+    type: 'enum',
+    enum: EstadoReporte,
+    enumName: 'estado_reporte',
+    default: EstadoReporte.PENDIENTE,
+  })
   estado!: EstadoReporte;
 
   @Column({ name: 'revisado_por', type: 'varchar', length: 36, nullable: true })
   revisadoPor!: string | null;
 
-  @Column({ name: 'fecha_revision', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_revision', type: 'timestamptz', nullable: true })
   fechaRevision!: Date | null;
 
   @Column({ name: 'motivo_rechazo', type: 'text', nullable: true })
@@ -60,7 +65,7 @@ export class ReporteCiudadano {
   @Column({ name: 'avistamiento_id', type: 'varchar', length: 36, nullable: true })
   avistamientoId!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
   // --- Reglas de dominio: un reporte se revisa UNA sola vez ---

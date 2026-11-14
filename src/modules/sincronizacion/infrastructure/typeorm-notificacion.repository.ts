@@ -31,7 +31,7 @@ export class TypeOrmNotificacionRepository implements NotificacionRepositoryPort
         base: filtro.baseNavalId,
       });
     }
-    if (filtro.soloNoLeidas) query.andWhere('n.leida = 0');
+    if (filtro.soloNoLeidas) query.andWhere('n.leida = false');
 
     const [data, total] = await query
       .orderBy('n.createdAt', 'DESC')

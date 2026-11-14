@@ -28,10 +28,15 @@ export class Usuario extends BaseEntity {
   @Column({ name: 'base_naval_id', type: 'varchar', length: 36, nullable: true })
   baseNavalId!: string | null;
 
-  @Column({ type: 'enum', enum: EstadoUsuario, default: EstadoUsuario.ACTIVO })
+  @Column({
+    type: 'enum',
+    enum: EstadoUsuario,
+    enumName: 'estado_usuario',
+    default: EstadoUsuario.ACTIVO,
+  })
   estado!: EstadoUsuario;
 
-  @Column({ name: 'mfa_habilitado', type: 'tinyint', width: 1, default: 0 })
+  @Column({ name: 'mfa_habilitado', type: 'boolean', default: false })
   mfaHabilitado!: boolean;
 
   @Column({ name: 'mfa_secreto_cifrado', type: 'text', nullable: true, select: false })
@@ -40,7 +45,7 @@ export class Usuario extends BaseEntity {
   @Column({ name: 'intentos_fallidos', type: 'int', default: 0 })
   intentosFallidos!: number;
 
-  @Column({ name: 'ultimo_acceso', type: 'timestamp', nullable: true })
+  @Column({ name: 'ultimo_acceso', type: 'timestamptz', nullable: true })
   ultimoAcceso!: Date | null;
 
   @ManyToOne(() => Rol, { eager: true })

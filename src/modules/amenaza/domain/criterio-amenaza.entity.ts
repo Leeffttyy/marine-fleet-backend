@@ -11,7 +11,7 @@ export class CriterioAmenaza {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   id!: string;
 
-  @Column({ type: 'enum', enum: NivelAmenaza })
+  @Column({ type: 'enum', enum: NivelAmenaza, enumName: 'nivel_amenaza' })
   nivel!: NivelAmenaza;
 
   @Column({
@@ -36,13 +36,13 @@ export class CriterioAmenaza {
   })
   montoMaximo!: number | null;
 
-  @Column({ type: 'tinyint', width: 1, default: 1 })
+  @Column({ type: 'boolean', default: true })
   vigente!: boolean;
 
-  @CreateDateColumn({ name: 'vigente_desde', type: 'timestamp' })
+  @CreateDateColumn({ name: 'vigente_desde', type: 'timestamptz' })
   vigenteDesde!: Date;
 
-  @Column({ name: 'vigente_hasta', type: 'timestamp', nullable: true })
+  @Column({ name: 'vigente_hasta', type: 'timestamptz', nullable: true })
   vigenteHasta!: Date | null;
 
   @Column({ name: 'modificado_por', type: 'varchar', length: 36, nullable: true })

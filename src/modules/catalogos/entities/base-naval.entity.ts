@@ -22,7 +22,12 @@ export class BaseNaval extends BaseEntity {
   @Column({ name: 'comandante_nombre', type: 'varchar', length: 150 })
   comandanteNombre!: string;
 
-  @Column({ type: 'enum', enum: EstadoBase, default: EstadoBase.ACTIVA })
+  @Column({
+    type: 'enum',
+    enum: EstadoBase,
+    enumName: 'estado_base_naval',
+    default: EstadoBase.ACTIVA,
+  })
   estado!: EstadoBase;
 
   @ManyToOne(() => ZonaInfluencia, { eager: true })

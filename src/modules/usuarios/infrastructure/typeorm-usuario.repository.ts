@@ -26,9 +26,12 @@ export class TypeOrmUsuarioRepository implements UsuarioRepositoryPort {
   /**
    * `password_hash` esta marcado con select: false para que no salga por
    * accidente en ninguna consulta; estos dos metodos son los unicos que lo piden.
+   *
+   * El correo se compara sin distinguir mayusculas (indice unico sobre
+   * lower(email)).
    */
   buscarPorEmailConCredenciales(email: string): Promise<Usuario | null> {
-    return this.conCredenciales().where('usuario.email = :email', { email }).getOne();
+    return this.conCredenciales().where('LOWER(usuario.email) = LOWER(:email)', { email }).getOne();
   }
 
   buscarPorIdConCredenciales(id: string): Promise<Usuario | null> {
@@ -43,7 +46,7 @@ export class TypeOrmUsuarioRepository implements UsuarioRepositoryPort {
     const query = this.repo.createQueryBuilder('usuario').leftJoinAndSelect('usuario.rol', 'rol');
 
     if (filtro.q) {
-      query.andWhere('(usuario.nombre_completo LIKE :q OR usuario.email LIKE :q)', {
+      query.andWhere('(usuario.nombre_completo ILIKE :q OR usuario.email ILIKE :q)', {
         q: `%${filtro.q}%`,
       });
     }
@@ -62,7 +65,11 @@ export class TypeOrmUsuarioRepository implements UsuarioRepositoryPort {
   }
 
   async existeEmail(email: string): Promise<boolean> {
-    return (await this.repo.countBy({ email })) > 0;
+    const total = await this.repo
+      .createQueryBuilder('usuario')
+      .where('LOWER(usuario.email) = LOWER(:email)', { email })
+      .getCount();
+    return total > 0;
   }
 
   guardar(usuario: Usuario): Promise<Usuario> {
@@ -72,7 +79,7 @@ export class TypeOrmUsuarioRepository implements UsuarioRepositoryPort {
   private conCredenciales(): ReturnType<Repository<Usuario>['createQueryBuilder']> {
     return this.repo
       .createQueryBuilder('usuario')
-      .addSelect('usuario.passwordHash')
+      .addSelect(['usuario.passwordHash', 'usuario.mfaSecretoCifrado'])
       .leftJoinAndSelect('usuario.rol', 'rol');
   }
 }
@@ -100,7 +107,7 @@ export class SqlBaseNavalLookup implements BaseNavalLookupPort {
 
   async existeActiva(baseNavalId: string): Promise<boolean> {
     const filas = (await this.dataSource.query(
-      `SELECT COUNT(*) AS n FROM bases_navales WHERE id = ? AND estado = 'ACTIVA'`,
+      `SELECT COUNT(*) AS n FROM bases_navales WHERE id = $1 AND estado = 'ACTIVA'`,
       [baseNavalId],
     )) as Array<{ n: number | string }>;
     return Number(filas[0]?.n ?? 0) > 0;

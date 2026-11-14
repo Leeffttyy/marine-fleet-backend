@@ -19,22 +19,22 @@ export class Membresia {
   @Column({ name: 'organizacion_id', type: 'varchar', length: 36 })
   organizacionId!: string;
 
-  @Column({ type: 'enum', enum: RolMembresia })
+  @Column({ type: 'enum', enum: RolMembresia, enumName: 'rol_membresia' })
   rol!: RolMembresia;
 
-  @Column({ type: 'tinyint', width: 1, default: 1 })
+  @Column({ type: 'boolean', default: true })
   vigente!: boolean;
 
-  @Column({ name: 'fecha_ingreso', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_ingreso', type: 'timestamptz', nullable: true })
   fechaIngreso!: Date | null;
 
-  @Column({ name: 'fecha_salida', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_salida', type: 'timestamptz', nullable: true })
   fechaSalida!: Date | null;
 
   @Column({ name: 'creado_por', type: 'varchar', length: 36, nullable: true })
   creadoPor!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
   @ManyToOne(() => Criminal, (criminal) => criminal.membresias, { onDelete: 'CASCADE' })

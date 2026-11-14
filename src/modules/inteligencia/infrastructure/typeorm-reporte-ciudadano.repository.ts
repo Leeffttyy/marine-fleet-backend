@@ -45,7 +45,7 @@ export class TypeOrmReporteCiudadanoRepository implements ReporteCiudadanoReposi
       // aprueban a la vez, el segundo espera, ve APROBADO y no crea un
       // avistamiento duplicado.
       const filas = (await manager.query(
-        `SELECT estado FROM reportes_ciudadanos WHERE id = ? FOR UPDATE`,
+        `SELECT estado FROM reportes_ciudadanos WHERE id = $1 FOR UPDATE`,
         [reporte.id],
       )) as Array<{ estado: string }>;
       if (filas[0]?.estado !== 'PENDIENTE') {

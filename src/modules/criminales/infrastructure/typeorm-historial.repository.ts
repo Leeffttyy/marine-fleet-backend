@@ -28,13 +28,14 @@ export class TypeOrmHistorialRepository implements HistorialCriminalRepositoryPo
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async listar(filtro: FiltroHistorial): Promise<PageResult<EntradaHistorial>> {
-    const condiciones = ['h.criminal_id = ?'];
     const parametros: unknown[] = [filtro.criminalId];
+    const condiciones = ['h.criminal_id = $1'];
     if (filtro.campo) {
-      condiciones.push('h.campo LIKE ?');
       parametros.push(`${filtro.campo}%`);
+      condiciones.push(`h.campo LIKE $${parametros.length}`);
     }
     const where = condiciones.join(' AND ');
+    const limite = parametros.length + 1;
 
     const [conteo] = (await this.dataSource.query(
       `SELECT COUNT(*) AS total FROM criminales_historial h WHERE ${where}`,
@@ -48,7 +49,7 @@ export class TypeOrmHistorialRepository implements HistorialCriminalRepositoryPo
          LEFT JOIN usuarios u ON u.id = h.usuario_id
         WHERE ${where}
         ORDER BY h.fecha DESC, h.id DESC
-        LIMIT ? OFFSET ?`,
+        LIMIT $${limite} OFFSET $${limite + 1}`,
       [...parametros, filtro.limit, (filtro.page - 1) * filtro.limit],
     )) as FilaHistorial[];
 

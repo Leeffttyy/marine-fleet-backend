@@ -29,34 +29,39 @@ export class Recompensa {
   @Column({ type: 'varchar', length: 20, default: 'BERRIES' })
   moneda!: string;
 
-  @Column({ type: 'enum', enum: EstadoRecompensa, default: EstadoRecompensa.PENDIENTE_VALIDACION })
+  @Column({
+    type: 'enum',
+    enum: EstadoRecompensa,
+    enumName: 'estado_recompensa',
+    default: EstadoRecompensa.PENDIENTE_VALIDACION,
+  })
   estado!: EstadoRecompensa;
 
-  @Column({ name: 'requiere_validacion', type: 'tinyint', width: 1, default: 0 })
+  @Column({ name: 'requiere_validacion', type: 'boolean', default: false })
   requiereValidacion!: boolean;
 
   @Column({ name: 'solicitada_por', type: 'varchar', length: 36, nullable: true })
   solicitadaPor!: string | null;
 
-  @CreateDateColumn({ name: 'fecha_solicitud', type: 'timestamp' })
+  @CreateDateColumn({ name: 'fecha_solicitud', type: 'timestamptz' })
   fechaSolicitud!: Date;
 
   @Column({ name: 'validada_por', type: 'varchar', length: 36, nullable: true })
   validadaPor!: string | null;
 
-  @Column({ name: 'fecha_validacion', type: 'timestamp', nullable: true })
+  @Column({ name: 'fecha_validacion', type: 'timestamptz', nullable: true })
   fechaValidacion!: Date | null;
 
-  @Column({ name: 'vigente_desde', type: 'timestamp', nullable: true })
+  @Column({ name: 'vigente_desde', type: 'timestamptz', nullable: true })
   vigenteDesde!: Date | null;
 
-  @Column({ name: 'vigente_hasta', type: 'timestamp', nullable: true })
+  @Column({ name: 'vigente_hasta', type: 'timestamptz', nullable: true })
   vigenteHasta!: Date | null;
 
   @Column({ type: 'text', nullable: true })
   motivo!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
   // --- Comportamiento de dominio ---

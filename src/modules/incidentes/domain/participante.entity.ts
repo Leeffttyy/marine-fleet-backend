@@ -14,16 +14,26 @@ export class Participante {
   @Column({ name: 'criminal_id', type: 'varchar', length: 36 })
   criminalId!: string;
 
-  @Column({ name: 'rol_en_incidente', type: 'enum', enum: RolEnIncidente })
+  @Column({
+    name: 'rol_en_incidente',
+    type: 'enum',
+    enum: RolEnIncidente,
+    enumName: 'rol_en_incidente',
+  })
   rolEnIncidente!: RolEnIncidente;
 
-  @Column({ type: 'enum', enum: DesenlaceParticipante, default: DesenlaceParticipante.DESCONOCIDO })
+  @Column({
+    type: 'enum',
+    enum: DesenlaceParticipante,
+    enumName: 'desenlace_participante',
+    default: DesenlaceParticipante.DESCONOCIDO,
+  })
   desenlace!: DesenlaceParticipante;
 
   @Column({ type: 'text', nullable: true })
   observaciones!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
   @ManyToOne(() => Incidente, (incidente) => incidente.participantes, { onDelete: 'CASCADE' })

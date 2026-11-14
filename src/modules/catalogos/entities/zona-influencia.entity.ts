@@ -19,7 +19,7 @@ export class ZonaInfluencia {
   @Column({ type: 'text', nullable: true })
   descripcion!: string | null;
 
-  @Column({ type: 'tinyint', width: 1, default: 1 })
+  @Column({ type: 'boolean', default: true })
   activo!: boolean;
 
   @ManyToOne(() => Mar, { eager: true })

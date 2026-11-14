@@ -10,10 +10,10 @@ con su flujo archivo por archivo, está en [`docs/casos/`](casos).
 
 El sistema son **dos repositorios** que se ejecutan a la vez:
 
-| Repositorio                   | Qué es                                               | Tecnología                                     | Dónde corre                    |
-| ----------------------------- | ---------------------------------------------------- | ---------------------------------------------- | ------------------------------ |
-| `marine-fleet-backend` (este) | La API: reglas de negocio, seguridad y base de datos | **TypeScript**, NestJS, TypeORM, MySQL/MariaDB | `http://localhost:3000/api/v1` |
-| `marine-fleet-frontend`       | Las pantallas                                        | **TypeScript**, React, Vite                    | `http://localhost:5173`        |
+| Repositorio                   | Qué es                                               | Tecnología                                  | Dónde corre                    |
+| ----------------------------- | ---------------------------------------------------- | ------------------------------------------- | ------------------------------ |
+| `marine-fleet-backend` (este) | La API: reglas de negocio, seguridad y base de datos | **TypeScript**, NestJS, TypeORM, PostgreSQL | `http://localhost:3000/api/v1` |
+| `marine-fleet-frontend`       | Las pantallas                                        | **TypeScript**, React, Vite                 | `http://localhost:5173`        |
 
 El frontend **nunca** toca la base de datos. Le pide todo al backend por HTTP con JSON, y el
 backend responde siempre con la misma forma:
@@ -45,8 +45,8 @@ Frontend ──HTTP──▶ main.ts (prefijo /api, versión v1, helmet, CORS)
 ```
 
 **Por qué tantas capas:** cada una tiene un solo trabajo. El caso de uso no sabe que existe
-MySQL (habla con el puerto), así que se prueba en milisegundos con un repositorio "en memoria"
-(hay 198 pruebas automáticas). Si mañana cambian de base de datos, solo cambia `infrastructure/`.
+la base de datos (habla con el puerto), así que se prueba en milisegundos con un repositorio "en memoria"
+(hay 207 pruebas automáticas). Si mañana cambian de base de datos, solo cambia `infrastructure/`.
 Estas reglas de capas no son una sugerencia: las verifica ESLint y el CI.
 
 ## 3. Mapa de módulos
@@ -128,7 +128,7 @@ Todas las rutas van con el prefijo `/api/v1`.
 
 - **Contraseñas con bcrypt:** `auth/infrastructure/bcrypt-hasher.adapter.ts`. La columna
   `password_hash` nunca sale en una respuesta.
-- **Rastro de modificaciones:** triggers de MySQL (`trg_criminales_historial_*`,
+- **Rastro de modificaciones:** triggers de PostgreSQL (`trg_criminales_historial_*`,
   `trg_recompensas_*`) más el `AuditInterceptor`. Ver [seguridad.md](casos/seguridad.md).
 - **Sin registros duplicados entre bases:** una sola base centralizada, más
   `nombre_normalizado` UNIQUE ("Monkey D. Luffy" = "monkey d luffy").

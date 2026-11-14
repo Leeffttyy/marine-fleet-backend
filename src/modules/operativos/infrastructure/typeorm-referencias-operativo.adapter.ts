@@ -22,8 +22,8 @@ export class TypeOrmReferenciasOperativoAdapter implements ReferenciasOperativoP
   async obtenerBases(ids: readonly string[]): Promise<BaseCandidata[]> {
     if (ids.length === 0) return [];
     const filas = (await this.db.query(
-      `SELECT id, zona_influencia_id, estado FROM bases_navales WHERE id IN (${ids.map(() => '?').join(',')})`,
-      [...ids],
+      `SELECT id, zona_influencia_id, estado FROM bases_navales WHERE id = ANY($1)`,
+      [[...ids]],
     )) as FilaBase[];
     return filas.map((f) => this.aCandidata(f));
   }
@@ -38,15 +38,15 @@ export class TypeOrmReferenciasOperativoAdapter implements ReferenciasOperativoP
   async usuariosActivos(ids: readonly string[]): Promise<string[]> {
     if (ids.length === 0) return [];
     const filas = (await this.db.query(
-      `SELECT id FROM usuarios WHERE estado = 'ACTIVO' AND id IN (${ids.map(() => '?').join(',')})`,
-      [...ids],
+      `SELECT id FROM usuarios WHERE estado = 'ACTIVO' AND id = ANY($1)`,
+      [[...ids]],
     )) as Array<{ id: string }>;
     return filas.map((f) => f.id);
   }
 
   async zonaExiste(zonaId: string): Promise<boolean> {
     const filas = (await this.db.query(
-      'SELECT COUNT(*) AS total FROM zonas_influencia WHERE id = ?',
+      'SELECT COUNT(*) AS total FROM zonas_influencia WHERE id = $1',
       [zonaId],
     )) as Array<{ total: number | string }>;
     return Number(filas[0]?.total ?? 0) > 0;

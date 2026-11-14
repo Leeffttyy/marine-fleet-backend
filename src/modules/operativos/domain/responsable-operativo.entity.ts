@@ -19,7 +19,7 @@ export class ResponsableOperativo {
   @Column({ type: 'varchar', length: 100, default: 'RESPONSABLE' })
   funcion!: string;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
   @ManyToOne(() => Operativo, (operativo) => operativo.responsables, { onDelete: 'CASCADE' })
