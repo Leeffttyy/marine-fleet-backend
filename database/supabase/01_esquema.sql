@@ -1,25 +1,15 @@
 -- =============================================================================
 -- Marine Fleet · Caso 13 · Esquema para Supabase (PostgreSQL 15 o superior)
 -- =============================================================================
--- Traducción a Postgres de las migraciones de TypeORM (MySQL):
---   1731200000000-InitSchema, 1731200100000-CreateOperativos,
---   1731200200000-CreateIncidentes, 1731200300000-AmpliarModelo,
---   1731200700000-AjustesRevision.
+-- Modelo completo: catálogos, seguridad, criminales, recompensas, inteligencia,
+-- operativos, incidentes, auditoría, amenaza, notificaciones y reportes.
 --
--- Equivalencias con MySQL:
---   VARCHAR(36) id          -> varchar(36) con gen_random_uuid() por defecto
---   ENUM(...)               -> tipos enumerados de Postgres (CREATE TYPE)
---   TINYINT(1)              -> boolean
---   JSON                    -> jsonb
---   TIMESTAMP               -> timestamptz (instante con zona horaria)
---   ON UPDATE CURRENT_TIMESTAMP -> trigger fn_tocar_updated_at()
---   SIGNAL SQLSTATE '45000' -> RAISE EXCEPTION
---   <=>                     -> IS DISTINCT FROM
---
--- Además de lo que ya hacía MySQL:
---   * Índices en las llaves foráneas (InnoDB los crea solo; Postgres no).
---   * Nombres y correos únicos sin distinguir mayúsculas (índices sobre
---     lower()), como hacía la collation utf8mb4_unicode_ci.
+-- Decisiones del esquema:
+--   * Ids varchar(36) con gen_random_uuid() por defecto: la API genera UUID y
+--     los datos de prueba usan ids legibles (c-luffy, b-loguetown).
+--   * Estados como tipos enumerados, fechas como timestamptz y JSON como jsonb.
+--   * Índices en todas las llaves foráneas.
+--   * Nombres y correos únicos sin distinguir mayúsculas (índices sobre lower()).
 --   * Una sola recompensa VIGENTE por criminal y un solo criterio vigente por
 --     nivel, garantizados por índices únicos parciales.
 --   * Las recompensas solo avanzan PENDIENTE_VALIDACION -> VIGENTE | RECHAZADA y
@@ -73,7 +63,7 @@ CREATE TYPE tipo_accion_auditoria  AS ENUM ('CREACION', 'ACTUALIZACION', 'ELIMIN
 -- 2. Funciones comunes
 -- =============================================================================
 
--- Reemplaza el ON UPDATE CURRENT_TIMESTAMP de MySQL.
+-- Mantiene updated_at al día en cada UPDATE.
 CREATE FUNCTION fn_tocar_updated_at() RETURNS trigger
 LANGUAGE plpgsql SET search_path = public AS $$
 BEGIN
@@ -92,7 +82,7 @@ CREATE TABLE mares (
   tipo   tipo_mar     NOT NULL,
   activo boolean      NOT NULL DEFAULT true
 );
--- Como la collation _ci de MySQL: "east blue" y "East Blue" son el mismo mar.
+-- Sin distinguir mayúsculas: "east blue" y "East Blue" son el mismo mar.
 CREATE UNIQUE INDEX uq_mares_nombre ON mares (lower(nombre));
 COMMENT ON TABLE mares IS 'Los Cuatro Mares y la Grand Line.';
 

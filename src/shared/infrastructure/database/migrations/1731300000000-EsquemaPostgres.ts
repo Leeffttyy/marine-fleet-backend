@@ -2,9 +2,7 @@ import type { MigrationInterface, QueryRunner } from 'typeorm';
 import { leerScript } from '../scripts-sql';
 
 /**
- * LINEA BASE EN POSTGRESQL. Reemplaza a las migraciones de MySQL (InitSchema,
- * CreateOperativos, CreateIncidentes, AmpliarModelo, AjustesRevision), que
- * siguen en el historial de git.
+ * LINEA BASE DEL ESQUEMA (PostgreSQL / Supabase).
  *
  * Corre database/supabase/01_esquema.sql, el mismo script que se pega en el SQL
  * Editor de Supabase. Si el esquema ya se creo asi, no hace nada y solo queda

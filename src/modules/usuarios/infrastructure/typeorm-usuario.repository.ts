@@ -28,7 +28,7 @@ export class TypeOrmUsuarioRepository implements UsuarioRepositoryPort {
    * accidente en ninguna consulta; estos dos metodos son los unicos que lo piden.
    *
    * El correo se compara sin distinguir mayusculas (indice unico sobre
-   * lower(email)), como lo hacia la collation de MySQL.
+   * lower(email)).
    */
   buscarPorEmailConCredenciales(email: string): Promise<Usuario | null> {
     return this.conCredenciales().where('LOWER(usuario.email) = LOWER(:email)', { email }).getOne();

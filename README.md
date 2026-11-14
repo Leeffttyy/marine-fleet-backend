@@ -18,8 +18,8 @@ npm install
 cp .env.example .env     # en PowerShell: Copy-Item .env.example .env
 ```
 
-Edita `.env` con los datos de tu base PostgreSQL (en Supabase, los del Session pooler y
-`DB_SSL=true`). Si `JWT_SECRET` tiene menos de 32 caracteres, la app no arranca: la validación
+Edita `.env`: en `DATABASE_URL` va la cadena de conexión de Supabase (**Connect → Session
+pooler**) con la contraseña de la base. Si `JWT_SECRET` tiene menos de 32 caracteres, la app no arranca: la validación
 de entorno es intencionalmente estricta.
 
 ```bash

@@ -1,7 +1,6 @@
 # Base de datos en Supabase (PostgreSQL)
 
-Scripts para crear la base del Caso 13 en Supabase. Traducen a Postgres las
-migraciones de TypeORM que había para MySQL. El backend los usa tal cual:
+Scripts para crear la base del Caso 13 en Supabase. El backend los usa tal cual:
 `npm run migration:run` corre `01_esquema.sql` y `npm run seed` corre
 `02_datos.sql`.
 
@@ -81,24 +80,24 @@ Sí se maneja, y la base lo protege:
 
 ## Conectar el backend
 
-En el proyecto de Supabase pulsa **Connect → Session pooler** y copia los datos
-al `.env` del backend:
+En el proyecto de Supabase pulsa **Connect** (arriba), pestaña **Connection
+String**, método **Session pooler**, y copia la cadena al `.env` del backend,
+cambiando `[YOUR-PASSWORD]` por la contraseña de la base:
 
 ```dotenv
-DB_HOST=aws-0-<region>.pooler.supabase.com
-DB_PORT=5432
-DB_USER=postgres.<id-del-proyecto>
-DB_PASSWORD=<la contraseña de la base>
-DB_NAME=postgres
-DB_SSL=true
+DATABASE_URL=postgresql://postgres.<id-del-proyecto>:<contraseña>@aws-0-<region>.pooler.supabase.com:5432/postgres
 ```
 
-Usa el Session pooler y no la conexión directa: la directa solo funciona por
-IPv6. La contraseña va únicamente en el `.env`, que nunca se commitea.
+Eso es todo: contra Supabase la conexión se cifra sola. Usa el Session pooler y
+no la conexión directa, que solo funciona por IPv6. La contraseña va
+únicamente en el `.env`, que nunca se commitea.
 
-Con `DB_SSL=true` la conexión va cifrada. Para que además verifique el
-servidor, descarga el certificado en **Database Settings → SSL Configuration**
-y pon su ruta en `DB_SSL_CA`.
+Las **API keys** (`anon`, `service_role`) no conectan el backend: sirven para la
+API REST de Supabase. Con Row Level Security activo, además, no pueden leer
+ninguna tabla.
+
+Para verificar también la identidad del servidor, descarga el certificado en
+**Database Settings → SSL Configuration** y pon su ruta en `DB_SSL_CA`.
 
 Las razones del cambio y su costo están en
 `docs/adr/0003-postgresql-en-supabase.md`.

@@ -21,7 +21,8 @@ Usamos **PostgreSQL en Supabase** con el driver `pg`. TypeORM sigue siendo el OR
   desde el SQL Editor de Supabase. Las migraciones de MySQL quedan en el historial de git.
 - Los datos de prueba viven en `database/supabase/02_datos.sql`. `npm run seed` corre ese
   mismo archivo, asi que hay una sola fuente de datos.
-- La conexion usa el **Session pooler** de Supabase con SSL (`DB_SSL=true`); la directa solo
+- La conexion es la cadena del **Session pooler** de Supabase en `DATABASE_URL`, con SSL
+  automatico. No se usan las API keys de Supabase: son para su API REST. La directa solo
   responde por IPv6.
 
 ## Consecuencias
