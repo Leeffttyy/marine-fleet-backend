@@ -94,7 +94,7 @@ export class GenerarCartelUseCase implements UseCase<GenerarCartelInput, Resulta
       numeroVersion: guardado.numeroVersion,
       motivo: guardado.motivoGeneracion,
     };
-    this.eventos.emit(EVENTOS.CARTEL_GENERADO, evento);
+    await this.eventos.emitAsync(EVENTOS.CARTEL_GENERADO, evento);
 
     return { cartel: guardado, generado: true };
   }

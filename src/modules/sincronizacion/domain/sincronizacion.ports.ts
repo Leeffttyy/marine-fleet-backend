@@ -1,6 +1,7 @@
 import type { PageResult } from '../../../shared/application/pagination/page-result';
 import type { AuthenticatedUser } from '../../../shared/domain/rbac/authenticated-user';
 import type { Notificacion } from './notificacion.entity';
+import type { CambioSincronizado } from './cambio-sincronizado';
 
 export const NOTIFICACION_REPOSITORY = Symbol('NOTIFICACION_REPOSITORY');
 
@@ -36,4 +37,21 @@ export const SALUD_PORT = Symbol('SALUD_PORT');
 export interface SaludPort {
   /** Latencia de un ping a la base en ms; lanza si la base no responde. */
   pingBaseDeDatos(): Promise<number>;
+}
+
+export const CAMBIOS_REPOSITORY = Symbol('CAMBIOS_REPOSITORY');
+
+/** Cambios persistidos: los comparten todas las instancias del API. */
+export interface CambiosRepositoryPort {
+  /** Guarda el cambio y devuelve su consecutivo (id de la tabla). */
+  registrar(evento: string, datos: unknown): Promise<CambioSincronizado>;
+  /** Cambios posteriores a un id y/o a una fecha, del mas viejo al mas nuevo. */
+  listar(criterio: {
+    despuesDeId?: number;
+    desde?: Date;
+    limite: number;
+  }): Promise<CambioSincronizado[]>;
+  ultimoId(): Promise<number>;
+  /** Borra lo anterior a la fecha dada. */
+  purgarAntesDe(fecha: Date): Promise<void>;
 }

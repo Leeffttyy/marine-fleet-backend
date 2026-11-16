@@ -47,7 +47,7 @@ export class CambiarEstadoOperativoUseCase implements UseCase<
     operativo.cambiarEstado(input.estado);
     const guardado = await this.operativos.guardar(operativo);
 
-    this.eventos.emit(
+    await this.eventos.emitAsync(
       EVENTOS.OPERATIVO_ACTUALIZADO,
       eventoOperativo(guardado, 'ESTADO', input.usuario.id),
     );

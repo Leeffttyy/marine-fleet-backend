@@ -121,6 +121,10 @@ export function eventosFalsos(): {
       emitidos.push({ nombre, datos });
       return true;
     },
+    emitAsync: (nombre: string, datos: unknown): Promise<unknown[]> => {
+      emitidos.push({ nombre, datos });
+      return Promise.resolve([]);
+    },
   } as unknown as EventEmitter2;
   return { emisor, emitidos };
 }

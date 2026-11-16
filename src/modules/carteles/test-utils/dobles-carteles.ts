@@ -143,5 +143,9 @@ export function emisorFalso(): EventEmitter2 & { emitidos: Array<[string, unknow
       emitidos.push([nombre, datos]);
       return true;
     },
+    emitAsync: (nombre: string, datos: unknown) => {
+      emitidos.push([nombre, datos]);
+      return Promise.resolve([]);
+    },
   } as unknown as EventEmitter2 & { emitidos: Array<[string, unknown]> };
 }
