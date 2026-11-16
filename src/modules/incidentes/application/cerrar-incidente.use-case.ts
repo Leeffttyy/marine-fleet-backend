@@ -53,7 +53,10 @@ export class CerrarIncidenteUseCase implements UseCase<CerrarIncidenteInput, Inc
     await this.incidentes.guardarParticipantes(participantes);
     guardado.participantes = participantes;
 
-    this.eventos.emit(EVENTOS.INCIDENTE_CERRADO, eventoCierre(guardado, input.usuario.id));
+    await this.eventos.emitAsync(
+      EVENTOS.INCIDENTE_CERRADO,
+      eventoCierre(guardado, input.usuario.id),
+    );
     return guardado;
   }
 }

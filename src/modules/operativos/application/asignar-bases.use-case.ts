@@ -71,7 +71,7 @@ export class AsignarBasesUseCase implements UseCase<AsignarBasesInput, Operativo
       ...cambiadas,
     ];
 
-    this.eventos.emit(
+    await this.eventos.emitAsync(
       EVENTOS.OPERATIVO_ACTUALIZADO,
       eventoOperativo(operativo, 'BASES', input.usuario.id),
     );

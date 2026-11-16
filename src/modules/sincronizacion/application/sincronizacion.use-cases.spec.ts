@@ -1,3 +1,5 @@
+import type { CambioSincronizado } from '../domain/cambio-sincronizado';
+import type { CambiosRepositoryPort } from '../domain/sincronizacion.ports';
 import { firstValueFrom, take, toArray } from 'rxjs';
 import { PageResult } from '../../../shared/application/pagination/page-result';
 import { ForbiddenError } from '../../../shared/domain/errors/forbidden.error';
@@ -8,7 +10,7 @@ import type {
   FiltroNotificaciones,
   NotificacionRepositoryPort,
 } from '../domain/sincronizacion.ports';
-import { CAPACIDAD_BUFFER, CanalSincronizacion } from './canal-sincronizacion.service';
+import { CanalSincronizacion } from './canal-sincronizacion.service';
 import {
   ListarNotificacionesUseCase,
   MarcarNotificacionLeidaUseCase,
@@ -38,25 +40,57 @@ class NotificacionesEnMemoria implements NotificacionRepositoryPort {
 
 const CAPITAN = { permisos: [Permiso.OPERATIVOS_LEER], baseNavalId: 'b-loguetown' };
 
-describe('CanalSincronizacion', () => {
-  it('entrega en vivo solo lo visible para la base del usuario', async () => {
-    const canal = new CanalSincronizacion();
-    const recibidos = firstValueFrom(canal.flujoPara(CAPITAN).pipe(take(2), toArray()));
+/** La tabla `cambios_sincronizacion` en memoria (compartida = "otra instancia"). */
+class CambiosEnMemoria implements CambiosRepositoryPort {
+  readonly filas: CambioSincronizado[] = [];
 
-    canal.publicar(EVENTOS.OPERATIVO_ACTUALIZADO, { basesIds: ['b-g5'] });
-    canal.publicar(EVENTOS.OPERATIVO_ACTUALIZADO, { basesIds: ['b-loguetown'] });
-    canal.publicar(EVENTOS.CRIMINAL_ACTUALIZADO, { criminalId: 'c-luffy' });
+  registrar(evento: string, datos: unknown): Promise<CambioSincronizado> {
+    const cambio = { id: this.filas.length + 1, evento, datos, fecha: new Date().toISOString() };
+    this.filas.push(cambio);
+    return Promise.resolve(cambio);
+  }
+  listar(criterio: { despuesDeId?: number; limite: number }): Promise<CambioSincronizado[]> {
+    return Promise.resolve(
+      this.filas.filter((c) => c.id > (criterio.despuesDeId ?? 0)).slice(0, criterio.limite),
+    );
+  }
+  ultimoId(): Promise<number> {
+    return Promise.resolve(this.filas.length);
+  }
+  purgarAntesDe(): Promise<void> {
+    return Promise.resolve();
+  }
+}
+
+describe('CanalSincronizacion', () => {
+  it('entrega en vivo solo lo visible para la base del usuario, sin repetir', async () => {
+    const canal = new CanalSincronizacion(new CambiosEnMemoria());
+    const recibidos = firstValueFrom(canal.flujoPara(CAPITAN, 0).pipe(take(2), toArray()));
+
+    await canal.publicar(EVENTOS.OPERATIVO_ACTUALIZADO, { basesIds: ['b-g5'] });
+    await canal.publicar(EVENTOS.OPERATIVO_ACTUALIZADO, { basesIds: ['b-loguetown'] });
+    await canal.publicar(EVENTOS.CRIMINAL_ACTUALIZADO, { criminalId: 'c-luffy' });
 
     expect((await recibidos).map((c) => c.id)).toEqual([2, 3]);
   });
 
-  it('guarda los ultimos cambios para reanudar y para el polling', () => {
-    const canal = new CanalSincronizacion();
-    for (let i = 0; i < CAPACIDAD_BUFFER + 5; i += 1) canal.publicar('x', {});
+  it('entrega cambios publicados por OTRA instancia (comparten la tabla)', async () => {
+    const tabla = new CambiosEnMemoria();
+    const instanciaA = new CanalSincronizacion(tabla);
+    const instanciaB = new CanalSincronizacion(tabla);
+    const recibido = firstValueFrom(instanciaB.flujoPara(CAPITAN, 0).pipe(take(1)));
 
-    const todos = canal.cambiosDesde(CAPITAN, {});
-    expect(todos).toHaveLength(CAPACIDAD_BUFFER);
-    expect(canal.cambiosDesde(CAPITAN, { despuesDeId: canal.ultimoId() - 3 })).toHaveLength(3);
+    await instanciaA.publicar(EVENTOS.CRIMINAL_ACTUALIZADO, { criminalId: 'c-zoro' });
+
+    expect((await recibido).datos).toEqual({ criminalId: 'c-zoro' });
+  });
+
+  it('reanuda y hace polling desde un id', async () => {
+    const canal = new CanalSincronizacion(new CambiosEnMemoria());
+    for (let i = 0; i < 10; i += 1) await canal.publicar('x', {});
+
+    const ultimo = await canal.ultimoId();
+    expect(await canal.cambiosDesde(CAPITAN, { despuesDeId: ultimo - 3 })).toHaveLength(3);
   });
 });
 

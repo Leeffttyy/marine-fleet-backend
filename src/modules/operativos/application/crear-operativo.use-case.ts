@@ -86,7 +86,7 @@ export class CrearOperativoUseCase implements UseCase<CrearOperativoInput, Opera
     guardado.bases = [lider];
     guardado.responsables = [];
 
-    this.eventos.emit(
+    await this.eventos.emitAsync(
       EVENTOS.OPERATIVO_ACTUALIZADO,
       eventoOperativo(guardado, 'CREADO', input.usuarioId),
     );

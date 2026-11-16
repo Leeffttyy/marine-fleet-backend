@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "{dist/**,database/supabase/**,node_modules/swagger-ui-dist/**,node_modules/pdfkit/js/data/**}",
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
+}

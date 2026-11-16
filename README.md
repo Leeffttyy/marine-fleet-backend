@@ -11,6 +11,8 @@ NestJS + TypeScript + TypeORM + PostgreSQL (Supabase), con Clean Architecture po
 > repo del frontend: si lo cambias, actualiza las dos copias. Las decisiones puntuales con su
 > razonamiento y su costo están en [`docs/adr/`](docs/adr).
 
+> **Desplegar en Vercel + Supabase:** ver [`docs/DESPLIEGUE-VERCEL.md`](docs/DESPLIEGUE-VERCEL.md).
+
 ## Arranque
 
 ```bash

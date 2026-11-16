@@ -83,7 +83,7 @@ export class RegistrarReporteCiudadanoUseCase implements UseCase<
       reporteId: guardado.id,
       criminalId: guardado.criminalId,
     };
-    this.eventos.emit(EVENTOS.REPORTE_RECIBIDO, evento);
+    await this.eventos.emitAsync(EVENTOS.REPORTE_RECIBIDO, evento);
 
     return {
       id: guardado.id,

@@ -75,8 +75,8 @@ export class RevisarReporteUseCase implements UseCase<RevisarReporteInput, Resul
       zonaInfluenciaId: avistamiento.zonaInfluenciaId,
       usuarioId: input.usuarioId,
     };
-    this.eventos.emit(EVENTOS.REPORTE_APROBADO, aprobado);
-    this.eventos.emit(EVENTOS.AVISTAMIENTO_REGISTRADO, registrado);
+    await this.eventos.emitAsync(EVENTOS.REPORTE_APROBADO, aprobado);
+    await this.eventos.emitAsync(EVENTOS.AVISTAMIENTO_REGISTRADO, registrado);
 
     return { reporte, avistamientoId: avistamiento.id };
   }

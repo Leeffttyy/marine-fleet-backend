@@ -63,7 +63,7 @@ export class AsignarResponsablesUseCase implements UseCase<AsignarResponsablesIn
       ...cambiados,
     ];
 
-    this.eventos.emit(
+    await this.eventos.emitAsync(
       EVENTOS.OPERATIVO_ACTUALIZADO,
       eventoOperativo(operativo, 'RESPONSABLES', input.usuario.id),
     );
