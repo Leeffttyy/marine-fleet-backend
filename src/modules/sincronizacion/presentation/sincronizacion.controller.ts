@@ -2,7 +2,7 @@ import { ForbiddenError } from '../../../shared/domain/errors/forbidden.error';
 import { Permiso, tienePermiso } from '../../../shared/domain/rbac/permiso.enum';
 import { Controller, Get, Inject, Query, Sse, type MessageEvent } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { interval, map, merge, of, takeUntil, timer, type Observable } from 'rxjs';
+import { from, interval, map, merge, of, switchMap, takeUntil, timer, type Observable } from 'rxjs';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { Public } from '../../../common/decorators/public.decorator';
 import type { AuthenticatedUser } from '../../../shared/domain/rbac/authenticated-user';
@@ -12,8 +12,15 @@ import { VERIFICADOR_SESION, type VerificadorSesionPort } from '../domain/sincro
 import { CambiosQueryDto, StreamQueryDto } from './dto/sincronizacion.dto';
 
 export const INTERVALO_LATIDO_MS = 15_000;
-/** Vida del access token: el canal no sobrevive a la sesion que lo abrio. */
-export const DURACION_MAXIMA_MS = 15 * 60_000;
+/**
+ * Cuanto dura abierto un canal SSE. Por defecto, la vida del access token (15
+ * min). En Vercel se baja con SSE_DURACION_MAXIMA_SEGUNDOS para cerrar antes de
+ * que la plataforma corte la funcion; el cliente reconecta solo.
+ */
+export function duracionMaximaMs(env: NodeJS.ProcessEnv = process.env): number {
+  const segundos = Number(env.SSE_DURACION_MAXIMA_SEGUNDOS);
+  return Number.isFinite(segundos) && segundos > 0 ? segundos * 1000 : 15 * 60_000;
+}
 
 const aMensaje = (cambio: CambioSincronizado): MessageEvent => ({
   id: String(cambio.id),
@@ -54,11 +61,6 @@ export class SincronizacionController {
       throw new ForbiddenError('recibir el canal de sincronizacion');
     }
 
-    const pendientes =
-      query.ultimoId !== undefined
-        ? this.canal.cambiosDesde(usuario, { despuesDeId: query.ultimoId })
-        : [];
-
     const latido = interval(INTERVALO_LATIDO_MS).pipe(
       map((): MessageEvent => ({
         type: 'latido',
@@ -66,29 +68,36 @@ export class SincronizacionController {
       })),
     );
 
-    // El token solo se valida al abrir: el canal se cierra a los 15 min (vida
-    // del access token). EventSource reconecta solo y, si el token vencio o la
-    // cuenta fue bloqueada, la reconexion recibe 401.
+    // Sin ultimoId se empieza desde el ultimo cambio existente (solo lo nuevo);
+    // con ultimoId se reenvia lo que el cliente se perdio durante el corte.
+    const desdeId$ =
+      query.ultimoId !== undefined ? of(query.ultimoId) : from(this.canal.ultimoId());
+
+    // El token solo se valida al abrir: el canal se cierra al cumplir la
+    // duracion maxima (en Vercel, antes del limite de la funcion). EventSource
+    // reconecta solo con su ultimoId y, si el token vencio, recibe 401.
     return merge(
-      of(...pendientes.map(aMensaje)),
-      this.canal.flujoPara(usuario).pipe(map(aMensaje)),
+      desdeId$
+        .pipe(switchMap((desdeId) => this.canal.flujoPara(usuario, desdeId)))
+        .pipe(map(aMensaje)),
       latido,
-    ).pipe(takeUntil(timer(DURACION_MAXIMA_MS)));
+    ).pipe(takeUntil(timer(duracionMaximaMs())));
   }
 
   @Get('cambios')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Cambios recientes (polling de respaldo, ultimos 500)' })
-  cambios(
+  async cambios(
     @Query() query: CambiosQueryDto,
     @CurrentUser() usuario: AuthenticatedUser,
-  ): { ultimoId: number; cambios: CambioSincronizado[] } {
-    return {
-      ultimoId: this.canal.ultimoId(),
-      cambios: this.canal.cambiosDesde(usuario, {
+  ): Promise<{ ultimoId: number; cambios: CambioSincronizado[] }> {
+    const [ultimoId, cambios] = await Promise.all([
+      this.canal.ultimoId(),
+      this.canal.cambiosDesde(usuario, {
         desde: query.desde ? new Date(query.desde) : undefined,
         despuesDeId: query.despuesDeId,
       }),
-    };
+    ]);
+    return { ultimoId, cambios };
   }
 }

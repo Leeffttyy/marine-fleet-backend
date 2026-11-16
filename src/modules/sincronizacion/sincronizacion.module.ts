@@ -14,6 +14,7 @@ import {
   NOTIFICACION_REPOSITORY,
   SALUD_PORT,
   VERIFICADOR_SESION,
+  CAMBIOS_REPOSITORY,
 } from './domain/sincronizacion.ports';
 import { JwtVerificadorSesionAdapter } from './infrastructure/jwt-verificador-sesion.adapter';
 import { EventosSincronizacionListener } from './infrastructure/listeners/eventos-sincronizacion.listener';
@@ -21,6 +22,7 @@ import { TypeOrmNotificacionRepository } from './infrastructure/typeorm-notifica
 import { TypeOrmSaludAdapter } from './infrastructure/typeorm-salud.adapter';
 import { NotificacionesController } from './presentation/notificaciones.controller';
 import { SaludController } from './presentation/salud.controller';
+import { SqlCambiosRepository } from './infrastructure/sql-cambios.repository';
 import { SincronizacionController } from './presentation/sincronizacion.controller';
 
 /**
@@ -55,6 +57,7 @@ import { SincronizacionController } from './presentation/sincronizacion.controll
     { provide: NOTIFICACION_REPOSITORY, useClass: TypeOrmNotificacionRepository },
     { provide: VERIFICADOR_SESION, useClass: JwtVerificadorSesionAdapter },
     { provide: SALUD_PORT, useClass: TypeOrmSaludAdapter },
+    { provide: CAMBIOS_REPOSITORY, useClass: SqlCambiosRepository },
   ],
 })
 export class SincronizacionModule {}

@@ -84,7 +84,7 @@ export class RegistrarAvistamientoUseCase implements UseCase<
       zonaInfluenciaId: guardado.zonaInfluenciaId,
       usuarioId: input.usuarioId,
     };
-    this.eventos.emit(EVENTOS.AVISTAMIENTO_REGISTRADO, evento);
+    await this.eventos.emitAsync(EVENTOS.AVISTAMIENTO_REGISTRADO, evento);
 
     return { avistamiento: guardado, criminalNombre: criminal.nombre };
   }

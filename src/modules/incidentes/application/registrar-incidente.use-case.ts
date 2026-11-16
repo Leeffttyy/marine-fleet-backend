@@ -95,14 +95,17 @@ export class RegistrarIncidenteUseCase implements UseCase<RegistrarIncidenteInpu
     await this.incidentes.guardarParticipantes(participantes);
     guardado.participantes = participantes;
 
-    this.eventos.emit(EVENTOS.INCIDENTE_REGISTRADO, {
+    await this.eventos.emitAsync(EVENTOS.INCIDENTE_REGISTRADO, {
       incidenteId: guardado.id,
       operativoId: guardado.operativoId,
       baseNavalId: guardado.baseNavalId,
       criminalesIds: ids,
     });
     if (guardado.estaCerrado()) {
-      this.eventos.emit(EVENTOS.INCIDENTE_CERRADO, eventoCierre(guardado, input.usuario.id));
+      await this.eventos.emitAsync(
+        EVENTOS.INCIDENTE_CERRADO,
+        eventoCierre(guardado, input.usuario.id),
+      );
     }
     return guardado;
   }

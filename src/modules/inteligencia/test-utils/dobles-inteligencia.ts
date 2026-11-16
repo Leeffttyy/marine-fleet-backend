@@ -80,5 +80,9 @@ export function emisorFalso(): EventEmitter2 & { emitidos: string[] } {
       emitidos.push(nombre);
       return true;
     },
+    emitAsync: (nombre: string) => {
+      emitidos.push(nombre);
+      return Promise.resolve([]);
+    },
   } as unknown as EventEmitter2 & { emitidos: string[] };
 }

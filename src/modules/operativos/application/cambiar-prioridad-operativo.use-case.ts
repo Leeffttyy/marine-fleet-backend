@@ -45,7 +45,7 @@ export class CambiarPrioridadOperativoUseCase implements UseCase<CambiarPriorida
     operativo.cambiarPrioridad(input.prioridad);
     const guardado = await this.operativos.guardar(operativo);
 
-    this.eventos.emit(
+    await this.eventos.emitAsync(
       EVENTOS.OPERATIVO_ACTUALIZADO,
       eventoOperativo(guardado, 'PRIORIDAD', input.usuario.id),
     );

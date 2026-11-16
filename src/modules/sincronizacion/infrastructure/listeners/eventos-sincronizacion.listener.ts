@@ -43,7 +43,7 @@ export class EventosSincronizacionListener implements OnModuleInit, OnModuleDest
 
   async atender(evento: string, datos: unknown): Promise<void> {
     try {
-      this.canal.publicar(evento, datos);
+      await this.canal.publicar(evento, datos);
       if ((EVENTOS_NOTIFICABLES as readonly string[]).includes(evento)) {
         await this.notificaciones.execute({ evento, datos });
       }

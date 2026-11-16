@@ -11,7 +11,7 @@ BEGIN;
 SET search_path = public;
 
 DROP TABLE IF EXISTS
-  reportes_recompensas, notificaciones, analisis_riesgo, auditoria,
+  cambios_sincronizacion, reportes_recompensas, notificaciones, analisis_riesgo, auditoria,
   incidente_participantes, incidentes, operativo_responsables, operativo_bases, operativos,
   criminales_historial, reportes_ciudadanos, avistamientos, carteles, criterios_amenaza,
   recompensas, antecedentes, membresias, criminales, organizaciones,

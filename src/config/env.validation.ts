@@ -42,7 +42,8 @@ export const envValidationSchema = Joi.object({
   BCRYPT_ROUNDS: Joi.number().min(10).max(14).default(10),
   MAX_INTENTOS_FALLIDOS: Joi.number().min(3).default(5),
 
-  FRONTEND_URL: Joi.string().uri().default('http://localhost:5173'),
+  // Una o varias URLs separadas por coma (produccion + vistas previas de Vercel).
+  FRONTEND_URL: Joi.string().default('http://localhost:5173'),
   STORAGE_PATH: Joi.string().default('./storage/carteles'),
 
   // Supabase Storage para fotos y carteles. Sin las dos, se usa el disco local.

@@ -43,7 +43,7 @@ export class CerrarOperativoUseCase implements UseCase<CerrarOperativoInput, Ope
     operativo.cerrar(input.resultado, input.observaciones?.trim() || null);
     const guardado = await this.operativos.guardar(operativo);
 
-    this.eventos.emit(
+    await this.eventos.emitAsync(
       EVENTOS.OPERATIVO_ACTUALIZADO,
       eventoOperativo(guardado, 'CERRADO', input.usuario.id),
     );
